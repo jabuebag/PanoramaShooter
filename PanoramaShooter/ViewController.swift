@@ -17,11 +17,16 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     var motionManager = CMMotionManager()
     
     // 53.89 for iphone5
-    var cameraAngle: Float!
+    var cameraHAngle: Double!
+    // 71.85 for iphone5
+    var cameraVAngle: Double!
     var yawPerTime : Double = 0.0
     var rotatedAngle: Double = 0.0
     var rotateDirection: Double = 0.0
     var lengthOfContext: Double = 0.0
+    var wantedAngle: Double = 18000.00
+    var initPitchAngle: Double!
+    var pitchedAngle: Double = 0.0
     
     var finalImage: UIImage?
     
@@ -51,25 +56,23 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         let qy = motion.attitude.quaternion.y
         let qz = motion.attitude.quaternion.z
         let qw = motion.attitude.quaternion.w
-        // motion.attitude.
-        var pitch = atan2(2*(qx*qw + qy*qz), 1 - 2*qx*qx - 2*qz*qz) * 180 / M_PI
-        var roll = atan2(2*(qy*qw + qx*qz), 1 - 2*qy*qy - 2*qz*qz) * 180 / M_PI
+        let pitch = atan2(2*(qx*qw + qy*qz), 1 - 2*qx*qx - 2*qz*qz) * 180 / M_PI
+        let roll = atan2(2*(qy*qw + qx*qz), 1 - 2*qy*qy - 2*qz*qz) * 180 / M_PI
         let yaw = (asin(2*qx*qy + 2*qz*qw) * 180 / M_PI) * 100
         rotateDirection = motion.rotationRate.y*180 / M_PI
+        if (initPitchAngle == nil) {
+            initPitchAngle = pitch
+        }
+        pitchedAngle = pitch - initPitchAngle
+        let perTimeAngle = abs(yaw - yawPerTime)
         if rotateDirection < 0 {
-            var perTimeAngle = abs(yaw - yawPerTime)
             rotatedAngle += perTimeAngle
-            yawPerTime = yaw
         }
         else {
-            if rotateDirection > 30 {
-                self.motionManager.stopDeviceMotionUpdates()
-                print("Please restart")
-            } else {
-                print("please rotate to right")
-            }
+            rotatedAngle -= perTimeAngle
             
         }
+        yawPerTime = yaw
     }
     
     lazy var cameraSession: AVCaptureSession = {
@@ -91,8 +94,10 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         let captureDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo) as AVCaptureDevice
         try! captureDevice.lockForConfiguration()
         captureDevice.exposureMode = AVCaptureExposureMode.autoExpose
+        captureDevice.focusMode = .autoFocus
+        captureDevice.activeVideoMaxFrameDuration = CMTimeMake(1, 30)
         captureDevice.unlockForConfiguration()
-        cameraAngle = captureDevice.activeFormat.videoFieldOfView
+        cameraHAngle = Double(captureDevice.activeFormat.videoFieldOfView)
         do {
             let deviceInput = try AVCaptureDeviceInput(device: captureDevice)
             cameraSession.beginConfiguration()
@@ -116,17 +121,18 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     
     // get every frame of video
     func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
-        if rotatedAngle <= 36000 {
+        if rotatedAngle < wantedAngle {
             var image: UIImage = imageFromSampleBuffer(sampleBuffer: sampleBuffer)
             var resizeImage = resizeImageWithFixedRatio(image: image, newWidth: image.size.width)
-            if (lengthOfContext == 0) {
-                lengthOfContext = Double(Int(360/cameraAngle * Float(image.size.width)))
-                print(lengthOfContext)
+            if (cameraVAngle == nil) {
+                cameraVAngle = cameraHAngle * Double(resizeImage.size.height / resizeImage.size.width)
             }
-            print(rotatedAngle)
-            print(lengthOfContext / 36000 * rotatedAngle)
-            // print(Double(lengthOfContext / 36000) * Double(rotatedAngle))
-            projectImage(resizeImage, vector: CGFloat(lengthOfContext / 36000 * rotatedAngle))
+            if (lengthOfContext == 0) {
+                lengthOfContext = (wantedAngle/100)/cameraHAngle * Double(resizeImage.size.width)
+            }
+            let vVector = CGFloat(pitchedAngle / cameraVAngle) * resizeImage.size.height
+            let hVector = CGFloat(lengthOfContext / wantedAngle * rotatedAngle)
+            projectImage(image: resizeImage, vVector: vVector, hVector: hVector)
             number += 1
             print(number)
         } else {
@@ -200,11 +206,12 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         return bitmapContext
     }
     
-    func projectImage(_ image: UIImage, vector: CGFloat) {
+    func projectImage(image: UIImage, vVector: CGFloat, hVector: CGFloat) {
         if projectContext == nil {
             projectContext = panoramaBitmapContext(Int(lengthOfContext), height: Int(image.size.height))
         }
-        projectContext?.draw(image.cgImage!, in: CGRect(x: vector, y: 0.0, width: image.size.width, height: image.size.height))
+        projectContext?.draw(image.cgImage!, in: CGRect(x: hVector, y: 0.0, width: image.size.width, height: image.size.height))
+        // projectContext?.draw(image.cgImage!, in: CGRect(x: hVector, y: vVector, width: image.size.width, height: image.size.height))
     }
     
     func generateImage() -> UIImage? {
