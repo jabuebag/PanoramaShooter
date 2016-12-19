@@ -63,7 +63,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         if (initPitchAngle == nil) {
             initPitchAngle = pitch
         }
-        pitchedAngle = pitch - initPitchAngle
+        pitchedAngle = (pitch - initPitchAngle) * 100
         let perTimeAngle = abs(yaw - yawPerTime)
         if rotateDirection < 0 {
             rotatedAngle += perTimeAngle
@@ -129,12 +129,12 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
             }
             if (lengthOfContext == 0) {
                 lengthOfContext = (wantedAngle/100)/cameraHAngle * Double(resizeImage.size.width)
+                print(resizeImage.size.height)
             }
-            let vVector = CGFloat(pitchedAngle / cameraVAngle) * resizeImage.size.height
+            let vVector = CGFloat((pitchedAngle/100)/cameraVAngle) * resizeImage.size.height
+            print(vVector)
             let hVector = CGFloat(lengthOfContext / wantedAngle * rotatedAngle)
             projectImage(image: resizeImage, vVector: vVector, hVector: hVector)
-            number += 1
-            print(number)
         } else {
             self.motionManager.stopDeviceMotionUpdates()
             self.previewLayer.isHidden = true
@@ -210,8 +210,8 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         if projectContext == nil {
             projectContext = panoramaBitmapContext(Int(lengthOfContext), height: Int(image.size.height))
         }
-        projectContext?.draw(image.cgImage!, in: CGRect(x: hVector, y: 0.0, width: image.size.width, height: image.size.height))
-        // projectContext?.draw(image.cgImage!, in: CGRect(x: hVector, y: vVector, width: image.size.width, height: image.size.height))
+        // projectContext?.draw(image.cgImage!, in: CGRect(x: hVector, y: 0.0, width: image.size.width, height: image.size.height))
+        projectContext?.draw(image.cgImage!, in: CGRect(x: hVector, y: vVector, width: image.size.width, height: image.size.height))
     }
     
     func generateImage() -> UIImage? {
