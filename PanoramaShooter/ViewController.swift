@@ -9,7 +9,6 @@
 import UIKit
 import AVFoundation
 import CoreMotion
-import Agrume
 
 class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
     
@@ -132,7 +131,6 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
                 print(resizeImage.size.height)
             }
             let vVector = CGFloat((pitchedAngle/100)/cameraVAngle) * resizeImage.size.height
-            print(vVector)
             let hVector = CGFloat(lengthOfContext / wantedAngle * rotatedAngle)
             projectImage(image: resizeImage, vVector: vVector, hVector: hVector)
         } else {
@@ -153,8 +151,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     }
     
     func tapImage() {
-        let agrume = Agrume(image: (imageView?.image)!)
-        agrume.showFrom(self)
+        print("nothing happened")
     }
     
     func imageFromSampleBuffer(sampleBuffer : CMSampleBuffer) -> UIImage
@@ -210,8 +207,8 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         if projectContext == nil {
             projectContext = panoramaBitmapContext(Int(lengthOfContext), height: Int(image.size.height))
         }
-        // projectContext?.draw(image.cgImage!, in: CGRect(x: hVector, y: 0.0, width: image.size.width, height: image.size.height))
-        projectContext?.draw(image.cgImage!, in: CGRect(x: hVector, y: vVector, width: image.size.width, height: image.size.height))
+        projectContext?.draw(image.cgImage!, in: CGRect(x: hVector, y: 0.0, width: image.size.width, height: image.size.height))
+        // projectContext?.draw(image.cgImage!, in: CGRect(x: hVector, y: vVector, width: image.size.width, height: image.size.height))
     }
     
     func generateImage() -> UIImage? {

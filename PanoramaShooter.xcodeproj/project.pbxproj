@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E6987B4AAA206857CBFEE87B /* Pods_PanoramaShooter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB56AEBE6A9ACB7F3432F3EE /* Pods_PanoramaShooter.framework */; };
 		E78206F31C72736E009F8BAB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78206F21C72736E009F8BAB /* AppDelegate.swift */; };
 		E78206F51C72736E009F8BAB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78206F41C72736E009F8BAB /* ViewController.swift */; };
 		E78206F81C72736E009F8BAB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E78206F61C72736E009F8BAB /* Main.storyboard */; };
@@ -16,8 +15,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		456FFA70F9DC153917966F82 /* Pods-PanoramaShooter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PanoramaShooter.release.xcconfig"; path = "Pods/Target Support Files/Pods-PanoramaShooter/Pods-PanoramaShooter.release.xcconfig"; sourceTree = "<group>"; };
-		A1AE210C8CB54F8D0521EAE2 /* Pods-PanoramaShooter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PanoramaShooter.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PanoramaShooter/Pods-PanoramaShooter.debug.xcconfig"; sourceTree = "<group>"; };
 		E78206EF1C72736E009F8BAB /* PanoramaShooter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PanoramaShooter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E78206F21C72736E009F8BAB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E78206F41C72736E009F8BAB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -25,7 +22,6 @@
 		E78206F91C72736E009F8BAB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E78206FC1C72736E009F8BAB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E78206FE1C72736E009F8BAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		EB56AEBE6A9ACB7F3432F3EE /* Pods_PanoramaShooter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PanoramaShooter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,37 +29,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E6987B4AAA206857CBFEE87B /* Pods_PanoramaShooter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		571502D59A393E01FD0873BE /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				A1AE210C8CB54F8D0521EAE2 /* Pods-PanoramaShooter.debug.xcconfig */,
-				456FFA70F9DC153917966F82 /* Pods-PanoramaShooter.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
-		945FC79DC21CB479EC1897EC /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				EB56AEBE6A9ACB7F3432F3EE /* Pods_PanoramaShooter.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		E78206E61C72736E009F8BAB = {
 			isa = PBXGroup;
 			children = (
 				E78206F11C72736E009F8BAB /* PanoramaShooter */,
 				E78206F01C72736E009F8BAB /* Products */,
-				571502D59A393E01FD0873BE /* Pods */,
-				945FC79DC21CB479EC1897EC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -95,12 +71,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E78207011C72736E009F8BAB /* Build configuration list for PBXNativeTarget "PanoramaShooter" */;
 			buildPhases = (
-				387631765749C1556AEAA2E2 /* [CP] Check Pods Manifest.lock */,
 				E78206EB1C72736E009F8BAB /* Sources */,
 				E78206EC1C72736E009F8BAB /* Frameworks */,
 				E78206ED1C72736E009F8BAB /* Resources */,
-				FDDFC319691B4F57AA50F3C9 /* [CP] Embed Pods Frameworks */,
-				4B21C6EA34D7995D06716983 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -158,54 +131,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		387631765749C1556AEAA2E2 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		4B21C6EA34D7995D06716983 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PanoramaShooter/Pods-PanoramaShooter-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		FDDFC319691B4F57AA50F3C9 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PanoramaShooter/Pods-PanoramaShooter-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E78206EB1C72736E009F8BAB /* Sources */ = {
@@ -329,7 +254,6 @@
 		};
 		E78207021C72736E009F8BAB /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A1AE210C8CB54F8D0521EAE2 /* Pods-PanoramaShooter.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 9A38T68U32;
@@ -344,7 +268,6 @@
 		};
 		E78207031C72736E009F8BAB /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 456FFA70F9DC153917966F82 /* Pods-PanoramaShooter.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 9A38T68U32;
