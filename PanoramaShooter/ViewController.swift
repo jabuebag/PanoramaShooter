@@ -12,6 +12,14 @@ import CoreMotion
 
 class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
     
+    @IBOutlet weak var shutterBtn: UIButton!
+    @IBOutlet weak var moveArrowView: UIView!
+    @IBOutlet weak var arrowBtn: UIButton!
+    @IBOutlet weak var arrowBtnConstraints: NSLayoutConstraint!
+    @IBOutlet weak var arrowBtnVerticalCons: NSLayoutConstraint!
+    
+    var cameraStart: Bool = false
+    
     var number: Int = 0
     var motionManager = CMMotionManager()
     
@@ -35,19 +43,34 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        moveArrowView.isHidden = true
+        arrowBtnConstraints.constant = 0
         number = 0
+        shutterBtn.layer.cornerRadius = shutterBtn.bounds.size.width/2
+        shutterBtn.layer.borderWidth = 3.0
+        shutterBtn.layer.borderColor = UIColor.darkGray.cgColor
         setupCameraSession()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
         view.layer.addSublayer(previewLayer)
-        
         cameraSession.startRunning()
         projectContext = nil
         motionManager.deviceMotionUpdateInterval = 1/30
-        self.motionManager.startDeviceMotionUpdates(to: OperationQueue.current!, withHandler: {motion,error in self.calculateRotationByGyro(motion: motion!)})
+        view.bringSubview(toFront: shutterBtn)
+    }
+    
+    @IBAction func shootBeginBtn(_ sender: Any) {
+        if (cameraStart == true) {
+            cameraStart = false
+        } else {
+            cameraStart = true
+            moveArrowView.isHidden = false
+            shutterBtn.backgroundColor = UIColor.red
+            self.view.bringSubview(toFront: moveArrowView)
+            self.motionManager.startDeviceMotionUpdates(to: OperationQueue.current!, withHandler: {motion,error in self.calculateRotationByGyro(motion: motion!)})
+        }
     }
     
     func calculateRotationByGyro(motion:CMDeviceMotion){
@@ -55,6 +78,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         let qy = motion.attitude.quaternion.y
         let qz = motion.attitude.quaternion.z
         let qw = motion.attitude.quaternion.w
+        let anotherPitch = motion.attitude.pitch * 180 / M_PI
         let pitch = atan2(2*(qx*qw + qy*qz), 1 - 2*qx*qx - 2*qz*qz) * 180 / M_PI
         let roll = atan2(2*(qy*qw + qx*qz), 1 - 2*qy*qy - 2*qz*qz) * 180 / M_PI
         let yaw = (asin(2*qx*qy + 2*qz*qw) * 180 / M_PI) * 100
@@ -71,6 +95,10 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
             rotatedAngle -= perTimeAngle
             
         }
+        print(pitch)
+        let conStant = (self.view.bounds.width - arrowBtn.bounds.width) * CGFloat(rotatedAngle / wantedAngle)
+        arrowBtnConstraints.constant = conStant >= 0 ? conStant : 0
+        arrowBtnVerticalCons.constant = 15 - CGFloat(pitchedAngle/100/cameraVAngle) * self.view.bounds.size.height
         yawPerTime = yaw
     }
     
@@ -120,29 +148,37 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     
     // get every frame of video
     func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
-        if rotatedAngle < wantedAngle {
-            var image: UIImage = imageFromSampleBuffer(sampleBuffer: sampleBuffer)
-            var resizeImage = resizeImageWithFixedRatio(image: image, newWidth: image.size.width)
-            if (cameraVAngle == nil) {
-                cameraVAngle = cameraHAngle * Double(resizeImage.size.height / resizeImage.size.width)
+        if (cameraStart) {
+            if rotatedAngle < wantedAngle {
+                var image: UIImage = imageFromSampleBuffer(sampleBuffer: sampleBuffer)
+                var resizeImage = resizeImageWithFixedRatio(image: image, newWidth: image.size.width)
+                if (cameraVAngle == nil) {
+                    cameraVAngle = cameraHAngle * Double(resizeImage.size.height / resizeImage.size.width)
+                }
+                if (lengthOfContext == 0) {
+                    lengthOfContext = (wantedAngle/100)/cameraHAngle * Double(resizeImage.size.width)
+                    print(resizeImage.size.height)
+                }
+                let vVector = CGFloat((pitchedAngle/100)/cameraVAngle) * resizeImage.size.height
+                let hVector = CGFloat(lengthOfContext / wantedAngle * rotatedAngle)
+                projectImage(image: resizeImage, vVector: vVector, hVector: hVector)
+            } else {
+                cameraStart = false
             }
-            if (lengthOfContext == 0) {
-                lengthOfContext = (wantedAngle/100)/cameraHAngle * Double(resizeImage.size.width)
-                print(resizeImage.size.height)
-            }
-            let vVector = CGFloat((pitchedAngle/100)/cameraVAngle) * resizeImage.size.height
-            let hVector = CGFloat(lengthOfContext / wantedAngle * rotatedAngle)
-            projectImage(image: resizeImage, vVector: vVector, hVector: hVector)
         } else {
-            self.motionManager.stopDeviceMotionUpdates()
-            self.previewLayer.isHidden = true
-            self.cameraSession.stopRunning()
-            var tapGesture = UITapGestureRecognizer(target: self, action: "tapImage")
-            imageView = UIImageView(image: generateImage())
-            imageView?.frame = CGRect(x: 0, y: 40, width: 400, height: 100)
-            imageView?.addGestureRecognizer(tapGesture)
-            imageView?.isUserInteractionEnabled = true
-            self.view.addSubview(imageView!)
+            if (rotatedAngle > 0) {
+                self.motionManager.stopDeviceMotionUpdates()
+                self.previewLayer.isHidden = true
+                self.shutterBtn.isHidden = true
+                self.moveArrowView.isHidden = true
+                self.cameraSession.stopRunning()
+                var tapGesture = UITapGestureRecognizer(target: self, action: "tapImage")
+                imageView = UIImageView(image: generateImage())
+                imageView?.frame = CGRect(x: 0, y: 40, width: 400, height: 100)
+                imageView?.addGestureRecognizer(tapGesture)
+                imageView?.isUserInteractionEnabled = true
+                self.view.addSubview(imageView!)
+            }
         }
     }
     
